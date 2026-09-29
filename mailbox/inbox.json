@@ -7,8 +7,16 @@
       "status": "pending",
       "from": "ai",
       "timestamp": "2026-09-29T12:45:15Z"
+    },
+    {
+      "id": "0b4e6e34",
+      "type": "cmd",
+      "cmd": "FL",
+      "status": "pending",
+      "from": "ai",
+      "timestamp": "2026-09-29T12:47:12Z"
     }
   ],
-  "last_updated": "2026-09-29T12:45:15Z",
+  "last_updated": "2026-09-29T12:47:12Z",
   "note": "AI writes commands here. Terminal polls this file."
 }
