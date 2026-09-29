@@ -1,48 +1,63 @@
-# Internet Relay for AI
+# AI Internet Relay (Disposable)
 
-ระบบสื่อสารระหว่าง AI (sandbox ที่ outbound ถูกจำกัด) กับ Internet-enabled Terminal  
-ผ่าน Public Mailbox บนเว็บ โดยไม่ต้องมี socket ตรงจากฝั่ง AI
+ระบบสื่อสารระหว่าง AI กับ Internet-enabled Terminal ผ่าน **URL ล้วน**  
+ใช้ GitHub repo นี้เป็น Public Mailbox
 
-## ไฟล์ในโฟลเดอร์นี้
+**Repo:** https://github.com/yooohubyooodev-serverscript/ai-internet-relay-temp  
+**สร้างเมื่อ:** 2026-09-29 (ใช้ครั้งเดียวทิ้ง)
 
-| ไฟล์                  | คำอธิบาย                                      |
-|-----------------------|-----------------------------------------------|
-| PROTOCOL.md           | นิยาม protocol แบบ Hybrid (JSON + Termux)    |
-| terminal_relay.sh     | สคริปต์ฝั่ง Terminal (polling + รันคำสั่ง)   |
-| ai_examples.md        | ตัวอย่างคำสั่งและวิธีใช้งานฝั่ง AI           |
-| README.md             | ไฟล์นี้                                       |
+## โครงสร้าง
 
-## วิธีใช้แบบรวดเร็ว (POC)
-
-### ฝั่ง AI
-1. สร้างข้อความ (JSON หรือ CMD:...)
-2. POST ไปที่ `https://aisenseapi.com/services/v1/storage`
-3. ได้ `storage_id` มา
-4. บอก Terminal ให้ watch id นั้น
-
-### ฝั่ง Terminal
-```bash
-chmod +x terminal_relay.sh
-CURRENT_INBOX=<storage_id> ./terminal_relay.sh
+```
+mailbox/
+  inbox.json   ← AI เขียนคำสั่งมาที่นี่
+  outbox.json  ← Terminal เขียนผลลัพธ์มาที่นี่
+PROTOCOL.md
+terminal_relay.sh          (เวอร์ชัน temporary storage)
+terminal_relay_github.sh   (เวอร์ชัน GitHub - แนะนำ)
+index.html                 (Dashboard อ่านอย่างเดียว)
+ai_examples.md
 ```
 
-### ผลลัพธ์
-Terminal จะรันคำสั่งแล้วสร้าง mailbox ใหม่สำหรับคำตอบ  
-AI ใช้ Web Access ไปอ่าน storage_id ของคำตอบ
+## วิธีใช้แบบเร็ว
 
-## ข้อจำกัดของเวอร์ชันปัจจุบัน
-- ใช้ temporary storage (หมดอายุประมาณ 24 ชั่วโมง)
-- ยังไม่มี persistent queue
-- ยังไม่มี UI
+### 1. ฝั่ง Terminal
+```bash
+export GITHUB_TOKEN=your_token_here
+chmod +x terminal_relay_github.sh
+./terminal_relay_github.sh
+```
 
-## แผนต่อไป (เมื่อมี GitHub Token)
-1. ย้ายไปใช้ GitHub Gist / Repository เป็น mailbox ถาวร
-2. สร้าง HTML Web App
-3. Deploy บน Render
-4. เพิ่ม UI ดู log, status, request/response
-5. รองรับการรัน Python และ automation ที่ซับซ้อนกว่านี้
+### 2. ฝั่ง AI ส่งคำสั่ง
+เขียนลง `mailbox/inbox.json` ในรูปแบบ:
 
-## Protocol สรุปสั้น ๆ
-- AI ส่ง: `CMD:คำสั่ง` หรือ JSON ที่มี `"cmd": "..."`
-- Terminal ตอบ: JSON ที่มี `"status": "done"` และ `"result": "..."`
-- ใช้ `id` เพื่อกันซ้ำ
+```json
+{
+  "messages": [
+    {
+      "id": "001",
+      "type": "cmd",
+      "cmd": "echo hello && date && whoami",
+      "status": "pending",
+      "from": "ai"
+    }
+  ],
+  "last_updated": "..."
+}
+```
+
+หรือใช้ raw URL อ่านผลจาก:
+- Inbox: https://raw.githubusercontent.com/yooohubyooodev-serverscript/ai-internet-relay-temp/main/mailbox/inbox.json
+- Outbox: https://raw.githubusercontent.com/yooohubyooodev-serverscript/ai-internet-relay-temp/main/mailbox/outbox.json
+
+## Protocol
+รองรับทั้ง:
+- `CMD:ls -la && echo hello` (แบบเทอร์มินัล)
+- JSON เต็มรูปแบบ
+
+ดูรายละเอียดใน `PROTOCOL.md`
+
+## ข้อควรระวัง
+- นี่เป็น repo แบบใช้ครั้งเดียวทิ้ง
+- Token ที่ใช้สร้างควรถูก revoke หลังใช้งานเสร็จ
+- อย่า commit token ลงในไฟล์
