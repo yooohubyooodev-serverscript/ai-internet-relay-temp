@@ -1,1 +1,14 @@
-{"messages":[],"last_updated":"2026-09-29T12:35:00Z","note":"AI writes commands here. Terminal polls this file."}
+{
+  "messages": [
+    {
+      "id": "7efe907a",
+      "type": "cmd",
+      "cmd": "U",
+      "status": "pending",
+      "from": "ai",
+      "timestamp": "2026-09-29T12:45:15Z"
+    }
+  ],
+  "last_updated": "2026-09-29T12:45:15Z",
+  "note": "AI writes commands here. Terminal polls this file."
+}
